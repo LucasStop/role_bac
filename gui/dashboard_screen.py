@@ -19,9 +19,11 @@ class DashboardScreen:
         self.file_manager = FileManager()
         
     def show_dashboard(self):
+        # Limpar a tela atual
         for widget in self.root.winfo_children():
             widget.destroy()
 
+        # Restaurar o tamanho da janela que pode ter sido alterado pelo editor
         self.root.title(f"Dashboard - {self.username}")
         self.root.geometry("1000x600") 
 
@@ -227,21 +229,32 @@ class DashboardScreen:
                 messagebox.showerror("Erro", f"Não foi possível criar o arquivo: {msg}")
                 return
         
-        success, editor = open_file_editor(
-            self.root, 
-            self.file_manager, 
+        # Limpar a janela principal e abrir o editor integrado
+        for widget in self.root.winfo_children():
+            widget.destroy()
+            
+        # Criar um frame principal para armazenar o editor
+        main_frame = tk.Frame(self.root)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Abrir o editor integrado na janela principal
+        open_file_editor(
+            self.root,
+            main_frame,
+            self.file_manager,
             self.username,
-            filename, 
+            filename,
             content,
-            self.refresh_file_list
+            self.show_dashboard,  # Função para voltar ao dashboard
+            self.refresh_file_list  # Função para atualizar a lista de arquivos
         )
         
-        if success:
-            self.status_label.config(text=f"Editando arquivo: {filename}")
+        self.status_label.config(text=f"Editando arquivo: {filename}")
 
     def open_selected_file(self):
         selection = self.file_tree.selection()
         if not selection:
+            messagebox.showinfo("Selecione um arquivo", "Por favor, selecione um arquivo para abrir.")
             return
 
         filename = self.file_tree.item(selection[0], "values")[0]
@@ -253,15 +266,25 @@ class DashboardScreen:
 
         success, content = self.file_manager.read_file(filename)
         if success:
+            # Limpar a janela principal e abrir o editor integrado
+            for widget in self.root.winfo_children():
+                widget.destroy()
+                
+            # Criar um frame principal para armazenar o editor
+            main_frame = tk.Frame(self.root)
+            main_frame.pack(fill=tk.BOTH, expand=True)
+            
+            # Abrir o editor integrado na janela principal
             open_file_editor(
-                self.root, 
-                self.file_manager, 
-                self.username, 
-                filename, 
+                self.root,
+                main_frame,
+                self.file_manager,
+                self.username,
+                filename,
                 content,
-                self.refresh_file_list
+                self.show_dashboard,  # Função para voltar ao dashboard
+                self.refresh_file_list  # Função para atualizar a lista de arquivos
             )
-            self.status_label.config(text=f"Arquivo aberto: {filename}")
         else:
             messagebox.showerror("Erro", f"Erro ao abrir arquivo: {content}")
             

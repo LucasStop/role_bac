@@ -3,37 +3,63 @@ import tkinter as tk
 from tkinter import scrolledtext, messagebox
 from core.user_data import load_user_data
 
-
-def open_file_editor(parent_root, file_manager, current_user, filename, content, refresh_callback=None):
+def open_file_editor(root, parent_frame, file_manager, current_user, filename, content, 
+                    return_callback=None, refresh_callback=None):
     """
-    Abre uma janela separada para editar o conteúdo de um arquivo.
-
+    Abre o editor de arquivos dentro da janela principal
+    
     Args:
-        parent_root: Janela principal Tkinter
+        root: Janela principal Tkinter
+        parent_frame: Frame pai onde o editor será colocado
         file_manager: Instância de FileManager
         current_user: Nome do usuário logado
         filename: Nome do arquivo a ser editado
         content: Conteúdo atual do arquivo
-        refresh_callback: Função opcional para atualizar a lista de arquivos após salvar
-
+        return_callback: Função para retornar à tela anterior
+        refresh_callback: Função para atualizar a lista de arquivos
+    
     Returns:
-        tuple: (success, window ou mensagem de erro)
+        Frame do editor
     """
-    editor_window = tk.Toplevel(parent_root)
-    editor_window.title(f"Editor - {filename}")
-    editor_window.geometry("700x500")
-    editor_window.minsize(500, 400)
-    editor_window.focus_force()
-
+    # Limpar o frame pai
+    for widget in parent_frame.winfo_children():
+        widget.destroy()
+    
+    # Atualizar título da janela principal
+    root.title(f"Editor - {filename}")
+    
     user_data = load_user_data()
     can_write = user_data[current_user]["permissions"].get("escrita", False)
     read_only = not can_write
-
-    main_frame = tk.Frame(editor_window)
-    main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
+    
+    # Frame principal do editor
+    editor_frame = tk.Frame(parent_frame, bg="#f5f5f5")
+    editor_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    
+    # Cabeçalho com informações e botões
+    header_frame = tk.Frame(editor_frame, bg="#2c3e50", padx=10, pady=5)
+    header_frame.pack(fill=tk.X, pady=(0, 10))
+    
+    tk.Label(
+        header_frame, 
+        text=f"Arquivo: {filename}", 
+        fg="white", 
+        bg="#2c3e50",
+        font=('Arial', 10, 'bold')
+    ).pack(side=tk.LEFT)
+    
     if read_only:
-        readonly_frame = tk.Frame(main_frame, bg="#ffeaa7", padx=10, pady=5)
+        tk.Label(
+            header_frame,
+            text="Modo somente leitura",
+            fg="#f39c12",
+            bg="#2c3e50",
+            font=('Arial', 9)
+        ).pack(side=tk.LEFT, padx=10)
+    
+    # Área de informação somente leitura, se aplicável
+    if read_only:
+        readonly_frame = tk.Frame(editor_frame, bg="#ffeaa7", padx=10, pady=5)
         readonly_frame.pack(fill=tk.X, pady=(0, 10))
         tk.Label(
             readonly_frame,
@@ -41,19 +67,25 @@ def open_file_editor(parent_root, file_manager, current_user, filename, content,
             bg="#ffeaa7",
             fg="#d35400"
         ).pack(anchor='w')
-
-    text_editor = scrolledtext.ScrolledText(main_frame, wrap=tk.WORD, font=('Courier', 11))
+    
+    # Área de texto com scroll
+    text_editor = scrolledtext.ScrolledText(
+        editor_frame, 
+        wrap=tk.WORD, 
+        font=('Courier', 11)
+    )
     text_editor.pack(fill=tk.BOTH, expand=True)
     text_editor.insert(tk.END, content)
-
+    
     if read_only:
         text_editor.config(state=tk.DISABLED)
-
+    
+    # Função para salvar o arquivo
     def save():
         if not can_write:
             messagebox.showerror("Sem permissão", "Você não tem permissão para salvar arquivos.")
             return
-            
+        
         # Se o arquivo já existe, edita-o. Senão, cria um novo.
         if filename in file_manager.list_files():
             result, msg = file_manager.edit_file(filename, text_editor.get("1.0", tk.END))
@@ -64,13 +96,27 @@ def open_file_editor(parent_root, file_manager, current_user, filename, content,
             messagebox.showinfo("Sucesso", msg)
             if refresh_callback:
                 refresh_callback()
-            editor_window.title(f"Editor - {filename} (Salvo)")
+            # Atualizar título mostrando que foi salvo
+            root.title(f"Editor - {filename} (Salvo)")
         else:
             messagebox.showerror("Erro", msg)
-
-    button_frame = tk.Frame(main_frame, pady=10)
+    
+    # Frame de botões
+    button_frame = tk.Frame(editor_frame, bg="#f5f5f5", pady=10)
     button_frame.pack(fill=tk.X)
-
+    
+    # Botão de voltar à tela anterior
+    tk.Button(
+        button_frame,
+        text="Voltar",
+        command=return_callback,
+        bg="#3498db",
+        fg="white",
+        width=10,
+        pady=5
+    ).pack(side=tk.LEFT, padx=5)
+    
+    # Botão de salvar (se tiver permissão)
     if can_write:
         tk.Button(
             button_frame,
@@ -81,15 +127,5 @@ def open_file_editor(parent_root, file_manager, current_user, filename, content,
             width=10,
             pady=5
         ).pack(side=tk.RIGHT, padx=5)
-
-    tk.Button(
-        button_frame,
-        text="Fechar",
-        command=editor_window.destroy,
-        bg="#95a5a6",
-        fg="white",
-        width=10,
-        pady=5
-    ).pack(side=tk.RIGHT, padx=5)
-
-    return True, editor_window
+    
+    return editor_frame
