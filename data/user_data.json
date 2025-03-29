@@ -1,1 +1,21 @@
-{}
+{
+    "lucas": {
+        "created_at": "2025-03-29 16:12:46",
+        "last_login": "2025-03-29 16:12:52",
+        "login_count": 1,
+        "notes": [],
+        "settings": {
+            "theme": "light"
+        },
+        "security": {
+            "failed_attempts": 0,
+            "is_locked": false,
+            "lock_time": null
+        },
+        "permissions": {
+            "leitura": true,
+            "escrita": true,
+            "remocao": true
+        }
+    }
+}
