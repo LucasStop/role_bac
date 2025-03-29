@@ -104,6 +104,11 @@ class DashboardScreen:
         tk.Button(actions_frame, text="Novo Arquivo", command=self.create_new_file,
                   bg="#2ecc71", fg="white", padx=10,
                   state=tk.NORMAL if permissions.get("escrita") else tk.DISABLED).pack(side=tk.RIGHT, padx=5)
+        
+        # Botão para excluir arquivo
+        tk.Button(actions_frame, text="Excluir Arquivo", command=self.remove_selected_file,
+                  bg="#e74c3c", fg="white", padx=10,
+                  state=tk.NORMAL if permissions.get("remocao") else tk.DISABLED).pack(side=tk.RIGHT, padx=5)
 
         tk.Button(actions_frame, text="Atualizar Lista", command=self.refresh_file_list,
                   bg="#3498db", fg="white", padx=10).pack(side=tk.RIGHT, padx=5)
@@ -129,6 +134,36 @@ class DashboardScreen:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.file_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.file_tree.bind("<Double-1>", lambda e: self.open_selected_file())
+        
+        # Adicionar menu de contexto ao clicar com botão direito
+        self.context_menu = tk.Menu(self.file_tree, tearoff=0)
+        self.file_tree.bind("<Button-3>", self.show_context_menu)
+        
+    def show_context_menu(self, event):
+        """Exibe o menu de contexto ao clicar com o botão direito em um item"""
+        # Primeiro seleciona o item sob o cursor
+        item = self.file_tree.identify_row(event.y)
+        if item:
+            self.file_tree.selection_set(item)
+            
+            # Limpa o menu de contexto
+            self.context_menu.delete(0, tk.END)
+            
+            # Adiciona as opções com base nas permissões
+            user_data = load_user_data()
+            permissions = user_data[self.username].get("permissions", {})
+            
+            if permissions.get("leitura"):
+                self.context_menu.add_command(label="Abrir", command=self.open_selected_file)
+                
+            if permissions.get("escrita"):
+                self.context_menu.add_command(label="Editar", command=self.open_selected_file)
+                
+            if permissions.get("remocao"):
+                self.context_menu.add_command(label="Excluir", command=self.remove_selected_file)
+                
+            # Exibe o menu no local do clique
+            self.context_menu.tk_popup(event.x_root, event.y_root)
 
     def _build_status_bar(self, parent):
         status = tk.Frame(parent, bg="#7f8c8d", height=25)
