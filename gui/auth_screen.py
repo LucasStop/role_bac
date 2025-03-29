@@ -6,7 +6,7 @@ from core.credentials import load_credentials
 from core.user_data import load_user_data
 from constants import AUTH_LOCKED, AUTH_NOT_FOUND, AUTH_SUCCESS, AUTH_WRONG_PASSWORD, LOCK_DURATION_MINUTES
 from datetime import datetime, timedelta
-from gui.dashboard_screen import DashboardScreen
+from gui.dashboard_screen import DashboardScreen, center_window
 
 class AuthScreen:
     def __init__(self, root, title_font, normal_font, button_font):
@@ -28,44 +28,52 @@ class AuthScreen:
 
     def show_main_menu(self):
         self.clear_screen()
-        frame = tk.Frame(self.root, bg="#f0f0f0", padx=20, pady=20)
+        # Centralizar a janela de menu principal
+        center_window(self.root, width=400, height=400)
+        self.root.title("Sistema de Autenticação")
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0", padx=20, pady=10)
         frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(frame, text="Sistema de Autenticação", font=self.title_font,
-                 bg="#f0f0f0", fg="#333333").pack(pady=20)
+                 bg="#f0f0f0", fg="#333333").pack(pady=15)
 
         tk.Button(frame, text="Registrar Novo Usuário", font=self.button_font,
                  command=self.show_register_screen, bg="#4CAF50", fg="white",
-                 width=25, height=2).pack(pady=10)
+                 width=25, height=2).pack(pady=8)
 
         tk.Button(frame, text="Fazer Login", font=self.button_font,
                  command=self.show_login_screen, bg="#2196F3", fg="white",
-                 width=25, height=2).pack(pady=10)
+                 width=25, height=2).pack(pady=8)
 
         tk.Button(frame, text="Sair", font=self.button_font,
                  command=self.root.quit, bg="#f44336", fg="white",
-                 width=25, height=2).pack(pady=10)
+                 width=25, height=2).pack(pady=8)
 
     def show_register_screen(self):
         self.clear_screen()
-        frame = tk.Frame(self.root, bg="#f0f0f0", padx=20, pady=20)
+        # Centralizar a janela de registro
+        center_window(self.root, width=400, height=500)
+        self.root.title("Registro de Usuário")
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0", padx=20, pady=10)
         frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(frame, text="Registrar Novo Usuário", font=self.title_font,
                  bg="#f0f0f0", fg="#333333").pack(pady=10)
 
         tk.Label(frame, text="Nome de Usuário:", font=self.normal_font,
-                 bg="#f0f0f0").pack(anchor='w', pady=(10, 0))
+                 bg="#f0f0f0").pack(anchor='w', pady=10)
         self.username_entry = tk.Entry(frame, font=self.normal_font, width=30)
-        self.username_entry.pack(fill=tk.X, pady=(0, 10))
+        self.username_entry.pack(fill=tk.X, pady=10)
 
         tk.Label(frame, text="Senha:", font=self.normal_font,
-                 bg="#f0f0f0").pack(anchor='w', pady=(10, 0))
+                 bg="#f0f0f0").pack(anchor='w', pady=10)
         self.password_entry = tk.Entry(frame, font=self.normal_font, width=30, show="*")
-        self.password_entry.pack(fill=tk.X, pady=(0, 10))
+        self.password_entry.pack(fill=tk.X, pady=10)
 
         tk.Label(frame, text="Defina as permissões iniciais:", font=self.normal_font,
-                 bg="#f0f0f0").pack(anchor='w', pady=(10, 0))
+                 bg="#f0f0f0").pack(anchor='w', pady=10)
         self.var_leitura = tk.BooleanVar(value=True)
         self.var_escrita = tk.BooleanVar(value=True)
         self.var_remocao = tk.BooleanVar(value=False)
@@ -83,21 +91,25 @@ class AuthScreen:
 
     def show_login_screen(self):
         self.clear_screen()
-        frame = tk.Frame(self.root, bg="#f0f0f0", padx=20, pady=20)
+        # Centralizar a janela de login
+        center_window(self.root, width=400, height=400)
+        self.root.title("Login de Usuário")
+        
+        frame = tk.Frame(self.root, bg="#f0f0f0", padx=20, pady=10)
         frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(frame, text="Login de Usuário", font=self.title_font,
                  bg="#f0f0f0", fg="#333333").pack(pady=10)
 
         tk.Label(frame, text="Nome de Usuário:", font=self.normal_font,
-                 bg="#f0f0f0").pack(anchor='w', pady=(10, 0))
+                 bg="#f0f0f0").pack(anchor='w', pady=10)
         self.login_username_entry = tk.Entry(frame, font=self.normal_font, width=30)
-        self.login_username_entry.pack(fill=tk.X, pady=(0, 10))
+        self.login_username_entry.pack(fill=tk.X, pady=10)
 
         tk.Label(frame, text="Senha:", font=self.normal_font,
-                 bg="#f0f0f0").pack(anchor='w', pady=(10, 0))
+                 bg="#f0f0f0").pack(anchor='w', pady=10)
         self.login_password_entry = tk.Entry(frame, font=self.normal_font, width=30, show="*")
-        self.login_password_entry.pack(fill=tk.X, pady=(0, 10))
+        self.login_password_entry.pack(fill=tk.X, pady=10)
 
         button_frame = tk.Frame(frame, bg="#f0f0f0")
         button_frame.pack(pady=20)

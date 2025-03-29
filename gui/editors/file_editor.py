@@ -94,10 +94,18 @@ def open_file_editor(root, parent_frame, file_manager, current_user, filename, c
             
         if result:
             messagebox.showinfo("Sucesso", msg)
-            if refresh_callback:
-                refresh_callback()
+            # Chamar o callback de atualização com segurança
+            try:
+                if refresh_callback and callable(refresh_callback):
+                    refresh_callback()
+            except Exception as e:
+                print(f"[Aviso] Erro ao chamar refresh_callback: {e}")
+                
             # Atualizar título mostrando que foi salvo
-            root.title(f"Editor - {filename} (Salvo)")
+            try:
+                root.title(f"Editor - {filename} (Salvo)")
+            except tk.TclError:
+                print("[Aviso] Não foi possível atualizar o título - widget destruído")
         else:
             messagebox.showerror("Erro", msg)
     
@@ -105,11 +113,24 @@ def open_file_editor(root, parent_frame, file_manager, current_user, filename, c
     button_frame = tk.Frame(editor_frame, bg="#f5f5f5", pady=10)
     button_frame.pack(fill=tk.X)
     
+    # Função segura para voltar à tela anterior
+    def safe_return():
+        try:
+            if return_callback and callable(return_callback):
+                return_callback()
+        except Exception as e:
+            print(f"[Erro] Não foi possível voltar à tela anterior: {e}")
+            # Tentar fechar a janela como fallback
+            try:
+                root.destroy()
+            except:
+                pass
+    
     # Botão de voltar à tela anterior
     tk.Button(
         button_frame,
         text="Voltar",
-        command=return_callback,
+        command=safe_return,
         bg="#3498db",
         fg="white",
         width=10,

@@ -7,6 +7,7 @@ from gui.auth_screen import AuthScreen
 from gui.styles import configure_app_style
 from constants import CREDENTIALS_FILE, USER_DATA_FILE
 from core.credentials import initialize_credentials
+from gui.dashboard_screen import center_window  # Importar a função de centralização
 
 def ensure_directories_exist():
     """Garante que os diretórios necessários existam"""
@@ -39,11 +40,8 @@ def main():
         root.minsize(400, 400)
         root.resizable(True, True)
 
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
-        center_x = int(screen_width / 2 - 400 / 2)
-        center_y = int(screen_height / 2 - 400 / 2)
-        root.geometry(f'400x400+{center_x}+{center_y}')
+        # Centralizar a janela usando a nova função
+        center_window(root, width=400, height=400)
 
         # Definir as fontes para uso em toda a aplicação
         title_font = font.Font(family="Arial", size=14, weight="bold")
