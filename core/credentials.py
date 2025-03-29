@@ -10,8 +10,17 @@ def initialize_credentials():
             json.dump({}, file)
 
 def load_credentials():
-    with open(CREDENTIALS_FILE, 'r') as file:
-        return json.load(file)
+    if not os.path.exists(CREDENTIALS_FILE):
+        with open(CREDENTIALS_FILE, 'w') as file:
+            json.dump({}, file)
+    try:
+        with open(CREDENTIALS_FILE, 'r') as file:
+            return json.load(file)
+    except json.JSONDecodeError:
+        with open(CREDENTIALS_FILE, 'w') as file:
+            json.dump({}, file)
+        return {}
+
 
 def save_credentials(credentials):
     with open(CREDENTIALS_FILE, 'w') as file:
