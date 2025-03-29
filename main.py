@@ -6,6 +6,7 @@ from datetime import datetime
 from gui.auth_screen import AuthScreen
 from gui.styles import configure_app_style
 from constants import CREDENTIALS_FILE, USER_DATA_FILE
+from core.credentials import initialize_credentials
 
 def ensure_directories_exist():
     """Garante que os diretórios necessários existam"""
@@ -29,6 +30,9 @@ def main():
         
         # Garantir que os diretórios necessários existam
         ensure_directories_exist()
+        
+        # Inicializar credenciais e verificar arquivos JSON
+        initialize_credentials()
         
         root = tk.Tk()
         root.title("Sistema de Controle de Acesso")

@@ -164,12 +164,25 @@ class AuthScreen:
                 messagebox.showerror("Erro", "Erro de autenticação desconhecido.")
                 
     def show_dashboard(self, username):
+        self.current_user = username
+        self.root.title(f"Dashboard - {username}")
+        
         if self.dashboard is None:
-            from gui.dashboard_screen import DashboardScreen
-            self.dashboard = DashboardScreen(self.root, self.title_font, self.normal_font, self.button_font, username, self)
+            # Só cria uma nova instância se ainda não existir
+            self.dashboard = DashboardScreen(
+                self.root, 
+                self.title_font, 
+                self.normal_font, 
+                self.button_font, 
+                username, 
+                self
+            )
         else:
+            # Atualiza o usuário no dashboard existente
             self.dashboard.username = username
-            self.dashboard.show_dashboard()
+        
+        # Exibe o dashboard
+        self.dashboard.show_dashboard()
             
     def logout(self):
         if messagebox.askyesno("Logout", "Deseja realmente sair da sua conta?"):

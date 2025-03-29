@@ -53,8 +53,13 @@ def open_file_editor(parent_root, file_manager, current_user, filename, content,
         if not can_write:
             messagebox.showerror("Sem permissão", "Você não tem permissão para salvar arquivos.")
             return
-
-        result, msg = file_manager.edit_file(filename, text_editor.get("1.0", tk.END))
+            
+        # Se o arquivo já existe, edita-o. Senão, cria um novo.
+        if filename in file_manager.list_files():
+            result, msg = file_manager.edit_file(filename, text_editor.get("1.0", tk.END))
+        else:
+            result, msg = file_manager.create_file(filename, text_editor.get("1.0", tk.END))
+            
         if result:
             messagebox.showinfo("Sucesso", msg)
             if refresh_callback:

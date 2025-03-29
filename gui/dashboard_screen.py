@@ -6,7 +6,6 @@ from datetime import datetime
 from core.file_manager import FileManager
 from core.user_data import load_user_data
 
-from gui.widgets import create_info_label, create_permission_label
 from gui.file_editor import open_file_editor
 
 class DashboardScreen:
@@ -18,15 +17,13 @@ class DashboardScreen:
         self.username = username
         self.controller = controller
         self.file_manager = FileManager()
-
-        # self.show_file_management_screen()
-
+        
     def show_dashboard(self):
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        self.root.title(f"Dashboard - {self.app.current_user}")
-        self.root.geometry("800x600")
+        self.root.title(f"Dashboard - {self.username}")
+        self.root.geometry("1000x600") 
 
         main_container = tk.Frame(self.root, bg="#f5f5f5")
         main_container.pack(fill=tk.BOTH, expand=True)
@@ -47,9 +44,9 @@ class DashboardScreen:
         user_frame = tk.Frame(header, bg="#2c3e50")
         user_frame.pack(side=tk.RIGHT, padx=20)
 
-        tk.Label(user_frame, text=f"Usuário: {self.app.current_user}",
+        tk.Label(user_frame, text=f"Usuário: {self.username}",
                  font=font.Font(family="Arial", size=10), fg="white", bg="#2c3e50").pack(side=tk.LEFT, padx=10)
-        tk.Button(user_frame, text="Sair", command=self.app.logout,
+        tk.Button(user_frame, text="Sair", command=self.controller.logout,
                   bg="#e74c3c", fg="white", font=font.Font(family="Arial", size=9)).pack(side=tk.LEFT)
 
     def _build_content(self, parent):
@@ -68,14 +65,14 @@ class DashboardScreen:
                  font=font.Font(family="Arial", size=12, weight="bold"),
                  fg="white", bg="#34495e").pack(pady=(20, 10), padx=10, anchor='w')
 
-        user_info = load_user_data().get(self.app.current_user, {})
+        user_info = load_user_data().get(self.username, {})
 
         info_frame = tk.Frame(sidebar, bg="#34495e", padx=10, pady=5)
         info_frame.pack(fill=tk.X)
 
-        create_info_label(info_frame, "Último login:", user_info.get("last_login", "Primeiro acesso"))
-        create_info_label(info_frame, "Total de logins:", str(user_info.get("login_count", "1")))
-        create_info_label(info_frame, "Conta criada em:", user_info.get("created_at", "Desconhecido"))
+        self.create_info_label(info_frame, "Último login:", user_info.get("last_login", "Primeiro acesso"))
+        self.create_info_label(info_frame, "Total de logins:", str(user_info.get("login_count", "1")))
+        self.create_info_label(info_frame, "Conta criada em:", user_info.get("created_at", "Desconhecido"))
 
         ttk.Separator(sidebar, orient='horizontal').pack(fill=tk.X, pady=10)
 
@@ -84,9 +81,9 @@ class DashboardScreen:
                  fg="white", bg="#34495e").pack(pady=(10, 5), padx=10, anchor='w')
 
         permissions = user_info.get("permissions", {})
-        create_permission_label(sidebar, "Leitura", permissions.get("leitura", False))
-        create_permission_label(sidebar, "Escrita", permissions.get("escrita", False))
-        create_permission_label(sidebar, "Remoção", permissions.get("remocao", False))
+        self.create_permission_label(sidebar, "Leitura", permissions.get("leitura", False))
+        self.create_permission_label(sidebar, "Escrita", permissions.get("escrita", False))
+        self.create_permission_label(sidebar, "Remoção", permissions.get("remocao", False))
 
     def _build_main_panel(self, parent):
         main_panel = tk.Frame(parent, bg="white")
@@ -100,7 +97,7 @@ class DashboardScreen:
                  bg="#ecf0f1").pack(side=tk.LEFT)
 
         user_data = load_user_data()
-        permissions = user_data[self.app.current_user].get("permissions", {})
+        permissions = user_data[self.username].get("permissions", {})
 
         tk.Button(actions_frame, text="Novo Arquivo", command=self.create_new_file,
                   bg="#2ecc71", fg="white", padx=10,
@@ -137,14 +134,40 @@ class DashboardScreen:
         self.status_label = tk.Label(status, text="Pronto", fg="white", bg="#7f8c8d", anchor='w')
         self.status_label.pack(fill=tk.X, padx=10, pady=3)
 
+    def create_info_label(self, parent, label_text, value_text):
+        """Cria um label com informação no painel lateral"""
+        frame = tk.Frame(parent, bg="#34495e")
+        frame.pack(fill=tk.X, pady=2)
+        
+        tk.Label(frame, text=label_text, font=font.Font(family="Arial", size=9),
+                fg="#bdc3c7", bg="#34495e", width=12, anchor='w').pack(side=tk.LEFT)
+                
+        tk.Label(frame, text=value_text, font=font.Font(family="Arial", size=9),
+                fg="white", bg="#34495e", anchor='w').pack(side=tk.LEFT, padx=5)
+    
+    def create_permission_label(self, parent, permission_name, has_permission):
+        """Cria um indicador de permissão no painel lateral"""
+        frame = tk.Frame(parent, bg="#34495e", padx=10, pady=2)
+        frame.pack(fill=tk.X)
+        
+        status_color = "#2ecc71" if has_permission else "#e74c3c"
+        status_text = "✓" if has_permission else "✗"
+        
+        tk.Label(frame, text=permission_name + ":", font=font.Font(family="Arial", size=9),
+                fg="#bdc3c7", bg="#34495e", anchor='w').pack(side=tk.LEFT)
+                
+        tk.Label(frame, text=status_text, font=font.Font(family="Arial", size=9, weight="bold"),
+                fg=status_color, bg="#34495e", width=2).pack(side=tk.RIGHT)
+
     def refresh_file_list(self):
         for i in self.file_tree.get_children():
             self.file_tree.delete(i)
 
         files = self.file_manager.list_files()
-        file_count = len(files)
+        file_count = len(files) if files else 0
+        
         user_data = load_user_data()
-        permissions = user_data[self.app.current_user].get("permissions", {})
+        permissions = user_data[self.username].get("permissions", {})
         can_read = permissions.get("leitura")
         can_write = permissions.get("escrita")
         can_delete = permissions.get("remocao")
@@ -166,6 +189,7 @@ class DashboardScreen:
         self.status_label.config(text=f"{file_count} arquivo(s) encontrado(s) no sistema")
 
     def _format_size(self, size):
+        """Formata o tamanho do arquivo em unidades legíveis (B, KB, MB, GB)"""
         if size < 1024:
             return f"{size} B"
         elif size < 1024 ** 2:
@@ -177,7 +201,7 @@ class DashboardScreen:
 
     def create_new_file(self):
         user_data = load_user_data()
-        if not user_data[self.app.current_user]["permissions"].get("escrita"):
+        if not user_data[self.username]["permissions"].get("escrita"):
             messagebox.showerror("Sem permissão", "Você não tem permissão para criar arquivos.")
             return
 
@@ -188,9 +212,32 @@ class DashboardScreen:
         if "." not in filename:
             filename += ".txt"
 
-        success, editor = open_file_editor(self.root, self.file_manager, self.app.current_user, filename, "")
+        # Aqui verificamos se o arquivo já existe
+        if filename in self.file_manager.list_files():
+            result, msg = self.file_manager.read_file(filename)
+            if result:
+                content = msg
+            else:
+                content = ""
+        else:
+            # Arquivo não existe, criar novo com conteúdo vazio
+            content = ""
+            result, msg = self.file_manager.create_file(filename, content)
+            if not result:
+                messagebox.showerror("Erro", f"Não foi possível criar o arquivo: {msg}")
+                return
+        
+        success, editor = open_file_editor(
+            self.root, 
+            self.file_manager, 
+            self.username,
+            filename, 
+            content,
+            self.refresh_file_list
+        )
+        
         if success:
-            self.status_label.config(text=f"Editando novo arquivo: {filename}")
+            self.status_label.config(text=f"Editando arquivo: {filename}")
 
     def open_selected_file(self):
         selection = self.file_tree.selection()
@@ -200,13 +247,45 @@ class DashboardScreen:
         filename = self.file_tree.item(selection[0], "values")[0]
         user_data = load_user_data()
 
-        if not user_data[self.app.current_user]["permissions"].get("leitura"):
+        if not user_data[self.username]["permissions"].get("leitura"):
             messagebox.showerror("Sem permissão", "Você não tem permissão para ler arquivos.")
             return
 
         success, content = self.file_manager.read_file(filename)
         if success:
-            open_file_editor(self.root, self.file_manager, self.app.current_user, filename, content)
+            open_file_editor(
+                self.root, 
+                self.file_manager, 
+                self.username, 
+                filename, 
+                content,
+                self.refresh_file_list
+            )
             self.status_label.config(text=f"Arquivo aberto: {filename}")
         else:
             messagebox.showerror("Erro", f"Erro ao abrir arquivo: {content}")
+            
+    def remove_selected_file(self):
+        selection = self.file_tree.selection()
+        if not selection:
+            messagebox.showinfo("Selecione um arquivo", "Por favor, selecione um arquivo para remover.")
+            return
+            
+        filename = self.file_tree.item(selection[0], "values")[0]
+        
+        user_data = load_user_data()
+        if not user_data[self.username]["permissions"].get("remocao"):
+            messagebox.showerror("Sem permissão", "Você não tem permissão para remover arquivos.")
+            return
+            
+        confirm = messagebox.askyesno("Confirmar exclusão", 
+                                    f"Tem certeza que deseja excluir o arquivo '{filename}'?")
+        if not confirm:
+            return
+            
+        success, message = self.file_manager.remove_file(filename)
+        if success:
+            messagebox.showinfo("Sucesso", message)
+            self.refresh_file_list()
+        else:
+            messagebox.showerror("Erro ao remover", message)
