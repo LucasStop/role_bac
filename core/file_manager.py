@@ -1,4 +1,3 @@
-# core/file_manager.py
 import os
 
 class FileManager:

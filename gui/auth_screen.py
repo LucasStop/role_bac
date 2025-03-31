@@ -1,4 +1,3 @@
-# gui/auth_screen.py
 import tkinter as tk
 from tkinter import messagebox
 from core.auth import authenticate_user, register_user
@@ -16,10 +15,8 @@ class AuthScreen:
         self.button_font = button_font
         self.current_user = None
         
-        # Inicializar a tela de dashboard
         self.dashboard = None
         
-        # Mostrar tela inicial
         self.show_main_menu()
 
     def clear_screen(self):
@@ -28,7 +25,6 @@ class AuthScreen:
 
     def show_main_menu(self):
         self.clear_screen()
-        # Centralizar a janela de menu principal
         center_window(self.root, width=400, height=400)
         self.root.title("Sistema de Autenticação")
         
@@ -52,7 +48,6 @@ class AuthScreen:
 
     def show_register_screen(self):
         self.clear_screen()
-        # Centralizar a janela de registro
         center_window(self.root, width=400, height=500)
         self.root.title("Registro de Usuário")
         
@@ -91,7 +86,6 @@ class AuthScreen:
 
     def show_login_screen(self):
         self.clear_screen()
-        # Centralizar a janela de login
         center_window(self.root, width=400, height=400)
         self.root.title("Login de Usuário")
         
@@ -180,7 +174,6 @@ class AuthScreen:
         self.root.title(f"Dashboard - {username}")
         
         if self.dashboard is None:
-            # Só cria uma nova instância se ainda não existir
             self.dashboard = DashboardScreen(
                 self.root, 
                 self.title_font, 
@@ -190,10 +183,8 @@ class AuthScreen:
                 self
             )
         else:
-            # Atualiza o usuário no dashboard existente
             self.dashboard.username = username
         
-        # Exibe o dashboard
         self.dashboard.show_dashboard()
             
     def logout(self):

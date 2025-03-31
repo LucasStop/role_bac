@@ -1,4 +1,3 @@
-# core/auth.py
 from datetime import datetime
 from core.credentials import load_credentials, save_credentials
 from core.user_data import load_user_data, save_user_data

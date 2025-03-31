@@ -1,4 +1,3 @@
-# gui/screens.py
 import tkinter as tk
 from tkinter import messagebox
 from core.credentials import initialize_credentials

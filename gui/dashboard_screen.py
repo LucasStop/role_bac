@@ -11,24 +11,19 @@ from gui.editors.draw_editor import open_draw_editor
 from gui.editors.sheet_editor import open_sheet_editor
 
 def center_window(window, width=None, height=None):
-    """Centraliza uma janela na tela"""
     if width is None:
         width = window.winfo_width()
     if height is None:
         height = window.winfo_height()
     
-    # Atualiza a janela para garantir que o tamanho está correto
     window.update_idletasks()
     
-    # Obtém o tamanho da tela
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
     
-    # Calcula as coordenadas para o centro
     x = int((screen_width - width) / 2)
     y = int((screen_height - height) / 2)
     
-    # Define a geometria
     window.geometry(f"{width}x{height}+{x}+{y}")
 
 class DashboardScreen:
@@ -43,14 +38,11 @@ class DashboardScreen:
         self.status_label = None
         
     def show_dashboard(self):
-        # Limpar a tela atual
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        # Restaurar o tamanho da janela que pode ter sido alterado pelo editor
         self.root.title(f"Dashboard - {self.username}")
         
-        # Definir o tamanho e centralizar
         center_window(self.root, width=1000, height=600)
 
         main_container = tk.Frame(self.root, bg="#f5f5f5")
@@ -127,7 +119,6 @@ class DashboardScreen:
         user_data = load_user_data()
         permissions = user_data[self.username].get("permissions", {})
 
-        # Botão de criação de arquivos com menu de opções
         if permissions.get("escrita"):
             create_button = tk.Menubutton(
                 actions_frame, 
@@ -148,7 +139,6 @@ class DashboardScreen:
             tk.Button(actions_frame, text="Novo Arquivo", state=tk.DISABLED,
                      bg="#2ecc71", fg="white", padx=10).pack(side=tk.RIGHT, padx=5)
 
-        # Adicionando o botão de excluir arquivo
         if permissions.get("remocao"):
             tk.Button(actions_frame, text="Excluir Arquivo", command=self.remove_selected_file,
                     bg="#e74c3c", fg="white", padx=10).pack(side=tk.RIGHT, padx=5)
@@ -187,7 +177,6 @@ class DashboardScreen:
         self.status_label.pack(fill=tk.X, padx=10, pady=3)
 
     def create_info_label(self, parent, label_text, value_text):
-        """Cria um label com informação no painel lateral"""
         frame = tk.Frame(parent, bg="#34495e")
         frame.pack(fill=tk.X, pady=2)
         
@@ -198,7 +187,6 @@ class DashboardScreen:
                 fg="white", bg="#34495e", anchor='w').pack(side=tk.LEFT, padx=5)
     
     def create_permission_label(self, parent, permission_name, has_permission):
-        """Cria um indicador de permissão no painel lateral"""
         frame = tk.Frame(parent, bg="#34495e", padx=10, pady=2)
         frame.pack(fill=tk.X)
         
@@ -212,7 +200,6 @@ class DashboardScreen:
                 fg=status_color, bg="#34495e", width=2).pack(side=tk.RIGHT)
 
     def refresh_file_list(self):
-        """Atualiza a lista de arquivos no TreeView"""
         try:
             if not hasattr(self, 'file_tree') or not self.file_tree.winfo_exists():
                 return
@@ -235,7 +222,6 @@ class DashboardScreen:
                     size = self._format_size(os.path.getsize(path))
                     mod_time = datetime.fromtimestamp(os.path.getmtime(path)).strftime('%d/%m/%Y %H:%M')
                     
-                    # Determinar o tipo do arquivo com base na extensão
                     if file.endswith('.txt'):
                         file_type = "Texto"
                     elif file.endswith('.draw'):
@@ -263,7 +249,6 @@ class DashboardScreen:
             print(f"[Erro] Exceção ao atualizar lista de arquivos: {e}")
     
     def safe_refresh_file_list(self):
-        """Versão segura do refresh_file_list que não gera exceções se os widgets forem destruídos"""
         try:
             self.refresh_file_list()
         except tk.TclError as e:
@@ -272,7 +257,6 @@ class DashboardScreen:
             print(f"[Erro] Exceção ao atualizar lista de arquivos: {e}")
 
     def _format_size(self, size):
-        """Formata o tamanho do arquivo em unidades legíveis (B, KB, MB, GB)"""
         if size < 1024:
             return f"{size} B"
         elif size < 1024 ** 2:
@@ -283,12 +267,6 @@ class DashboardScreen:
             return f"{size/(1024**3):.1f} GB"
 
     def create_new_file(self, default_extension=".txt"):
-        """
-        Cria um novo arquivo com o tipo definido pela extensão
-        
-        Args:
-            default_extension: Extensão padrão do arquivo (.txt, .draw, .sheet)
-        """
         user_data = load_user_data()
         if not user_data[self.username]["permissions"].get("escrita"):
             messagebox.showerror("Sem permissão", "Você não tem permissão para criar arquivos.")
@@ -298,11 +276,9 @@ class DashboardScreen:
         if not filename:
             return
 
-        # Verificar se a extensão foi fornecida, caso contrário adicionar
         if "." not in filename:
             filename += default_extension
 
-        # Verificar se não há correspondência de extensão
         if default_extension == ".draw" and not filename.endswith(".draw"):
             filename += ".draw"
         elif default_extension == ".sheet" and not filename.endswith(".sheet"):
@@ -312,7 +288,6 @@ class DashboardScreen:
                                                  filename.endswith(".sheet")):
             filename += ".txt"
 
-        # Aqui verificamos se o arquivo já existe
         if filename in self.file_manager.list_files():
             result, msg = self.file_manager.read_file(filename)
             if result:
@@ -320,12 +295,11 @@ class DashboardScreen:
             else:
                 content = ""
         else:
-            # Arquivo não existe, criar novo com conteúdo inicial apropriado
             if filename.endswith(".draw"):
                 content = '{"strokes": [], "current_stroke": []}'
             elif filename.endswith(".sheet"):
                 content = '{"rows": 10, "columns": 5, "cells": {}}'
-            else:  # .txt ou outro tipo
+            else:
                 content = ""
                 
             result, msg = self.file_manager.create_file(filename, content)
@@ -333,37 +307,29 @@ class DashboardScreen:
                 messagebox.showerror("Erro", f"Não foi possível criar o arquivo: {msg}")
                 return
         
-        # Limpar a janela principal 
         for widget in self.root.winfo_children():
             widget.destroy()
             
-        # Criar um frame principal para armazenar o editor
         main_frame = tk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Centralizar a janela do editor com tamanho adequado
         center_window(self.root, width=1000, height=600)
         
-        # Abrir o editor apropriado baseado no tipo de arquivo
         if filename.endswith(".draw"):
             open_draw_editor(
                 self.root, main_frame, self.file_manager, self.username,
                 filename, content, self.show_dashboard, self.safe_refresh_file_list
             )
-            # Removido self.status_label.config aqui pois o status_label foi destruído
         elif filename.endswith(".sheet"):
             open_sheet_editor(
                 self.root, main_frame, self.file_manager, self.username,
                 filename, content, self.show_dashboard, self.safe_refresh_file_list
             )
-            # Removido self.status_label.config aqui pois o status_label foi destruído
         else:
-            # Arquivo de texto padrão
             open_file_editor(
                 self.root, main_frame, self.file_manager, self.username,
                 filename, content, self.show_dashboard, self.safe_refresh_file_list
             )
-            # Removido self.status_label.config aqui pois o status_label foi destruído
 
     def open_selected_file(self):
         selection = self.file_tree.selection()
@@ -380,18 +346,14 @@ class DashboardScreen:
 
         success, content = self.file_manager.read_file(filename)
         if success:
-            # Limpar a janela principal e abrir o editor integrado
             for widget in self.root.winfo_children():
                 widget.destroy()
                 
-            # Criar um frame principal para armazenar o editor
             main_frame = tk.Frame(self.root)
             main_frame.pack(fill=tk.BOTH, expand=True)
             
-            # Centralizar a janela do editor com tamanho adequado
             center_window(self.root, width=1000, height=600)
             
-            # Abrir o editor apropriado baseado no tipo de arquivo
             if filename.endswith(".draw"):
                 open_draw_editor(
                     self.root, main_frame, self.file_manager, self.username,
@@ -403,7 +365,6 @@ class DashboardScreen:
                     filename, content, self.show_dashboard, self.safe_refresh_file_list
                 )
             else:
-                # Arquivo de texto padrão
                 open_file_editor(
                     self.root, main_frame, self.file_manager, self.username,
                     filename, content, self.show_dashboard, self.safe_refresh_file_list

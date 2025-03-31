@@ -1,4 +1,3 @@
-# core/credentials.py
 import os
 import json
 import time
@@ -14,7 +13,6 @@ def initialize_credentials():
             with open(CREDENTIALS_FILE, 'w') as file:
                 json.dump({}, file, indent=4)
         else:
-            # Verificar se o JSON é válido
             with open(CREDENTIALS_FILE, 'r') as file:
                 try:
                     json.load(file)
