@@ -1,8 +1,8 @@
 {
     "lucas": {
         "created_at": "2025-03-29 16:12:46",
-        "last_login": "2025-03-30 13:37:24",
-        "login_count": 32,
+        "last_login": "2025-03-31 03:01:10",
+        "login_count": 33,
         "notes": [],
         "settings": {
             "theme": "light"
@@ -18,10 +18,10 @@
             "remocao": true
         }
     },
-    "lucas1": {
-        "created_at": "2025-03-29 16:50:09",
-        "last_login": "",
-        "login_count": 0,
+    "lucas leitura": {
+        "created_at": "2025-03-31 02:57:00",
+        "last_login": "2025-03-31 02:57:10",
+        "login_count": 1,
         "notes": [],
         "settings": {
             "theme": "light"
@@ -30,6 +30,63 @@
             "failed_attempts": 0,
             "is_locked": false,
             "lock_time": null
+        },
+        "permissions": {
+            "leitura": true,
+            "escrita": false,
+            "remocao": false
+        }
+    },
+    "lucas escrita": {
+        "created_at": "2025-03-31 02:57:41",
+        "last_login": "2025-03-31 02:57:47",
+        "login_count": 1,
+        "notes": [],
+        "settings": {
+            "theme": "light"
+        },
+        "security": {
+            "failed_attempts": 0,
+            "is_locked": false,
+            "lock_time": null
+        },
+        "permissions": {
+            "leitura": false,
+            "escrita": true,
+            "remocao": false
+        }
+    },
+    "lucas remo\u00e7\u00e3o": {
+        "created_at": "2025-03-31 02:58:56",
+        "last_login": "2025-03-31 02:59:05",
+        "login_count": 1,
+        "notes": [],
+        "settings": {
+            "theme": "light"
+        },
+        "security": {
+            "failed_attempts": 0,
+            "is_locked": false,
+            "lock_time": null
+        },
+        "permissions": {
+            "leitura": false,
+            "escrita": false,
+            "remocao": true
+        }
+    },
+    "lucas teste": {
+        "created_at": "2025-03-31 02:59:42",
+        "last_login": "2025-03-31 02:59:52",
+        "login_count": 1,
+        "notes": [],
+        "settings": {
+            "theme": "light"
+        },
+        "security": {
+            "failed_attempts": 5,
+            "is_locked": true,
+            "lock_time": "2025-03-31 03:00:06"
         },
         "permissions": {
             "leitura": true,
