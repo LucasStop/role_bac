@@ -4,7 +4,7 @@ from tkinter import font
 from datetime import datetime
 from gui.auth_screen import AuthScreen
 from gui.styles import configure_app_style
-from constants import CREDENTIALS_FILE, USER_DATA_FILE
+from constants import CREDENTIALS_FILE, USER_DATA_FILE, FILES_DATA_DIR
 from core.credentials import initialize_credentials
 from gui.dashboard_screen import center_window 
 
@@ -12,7 +12,7 @@ def ensure_directories_exist():
     directories = [
         os.path.dirname(CREDENTIALS_FILE),
         os.path.dirname(USER_DATA_FILE),
-        "data/arquivos"
+        FILES_DATA_DIR
     ]
     
     for directory in directories:
