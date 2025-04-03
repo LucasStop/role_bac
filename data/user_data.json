@@ -1,5 +1,5 @@
 {
-    "lucas": {
+    "admin": {
         "created_at": "2025-03-29 16:12:46",
         "last_login": "2025-04-03 17:50:10",
         "login_count": 34,
@@ -18,7 +18,7 @@
             "remocao": true
         }
     },
-    "lucas leitura": {
+    "leitura": {
         "created_at": "2025-03-31 02:57:00",
         "last_login": "2025-03-31 02:57:10",
         "login_count": 1,
@@ -37,7 +37,7 @@
             "remocao": false
         }
     },
-    "lucas escrita": {
+    "escrita": {
         "created_at": "2025-03-31 02:57:41",
         "last_login": "2025-03-31 02:57:47",
         "login_count": 1,
@@ -56,7 +56,7 @@
             "remocao": false
         }
     },
-    "lucas remo\u00e7\u00e3o": {
+    "remo\u00e7\u00e3o": {
         "created_at": "2025-03-31 02:58:56",
         "last_login": "2025-03-31 02:59:05",
         "login_count": 1,
@@ -75,7 +75,7 @@
             "remocao": true
         }
     },
-    "lucas teste": {
+    "teste": {
         "created_at": "2025-03-31 02:59:42",
         "last_login": "2025-03-31 02:59:52",
         "login_count": 1,
